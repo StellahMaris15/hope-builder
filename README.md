@@ -1,40 +1,352 @@
 # Hope Builder
+# Hope Alliance
 
-You are a full-stack system architect. Your task is to generate a comprehensive, production-ready system recreate the system shown in image.png being attached as a fully functional web application with Supabase backend integration.
+> **Hope. Faith. Community. Impact.**
 
-The system consists of two parts:
+Hope Alliance is a modern web platform designed for a church-based nonprofit organization focused on spreading hope, supporting communities, empowering young people, providing education and mentorship, and creating opportunities for positive social impact.
 
-**Public-Facing Website (HOPE Alliance):**
+The platform provides visitors with information about Hope Alliance's programs, services, events, blog articles, impact, and ways to get involved or make a donation.
 
-- Hero section with headline "Building Hope. Transforming Lives."
+---
 
-- Impact metrics display (1,500+ people, 500+ students, 200+ youth, 30+ projects)
+## 📌 Project Overview
 
-- Six Programs section (Education, Mentorship, Youth Conference, Charity, Ministry, Skills)
+The Hope Alliance website serves as the organization's digital presence and communication platform.
 
-- Blog section
+It allows visitors to:
 
-- Upcoming Events listing
+* Learn about Hope Alliance
+* Explore programs and services
+* Read blog articles and stories
+* View the organization's impact
+* Learn about upcoming youth conferences and events
+* Contact the organization
+* Support the organization's work through donations
+* Access relevant information about the organization's mission and activities
 
-- Contact form and Newsletter signup
+The system also provides an administrative backend for managing website content.
 
-**Admin Dashboard** (protected/authenticated):
+---
 
-- Sidebar navigation with modules: Programs, Events, Blog Posts, Donations, Event Registrations, Volunteers, Mentors, Prayer Requests, Messages, Newsletter, Media, Users, Settings
+## ✨ Key Features
 
-- Key metrics cards: Total Donations (UGX 8.5M, +22% 30-day), Total Volunteers (43, -12%), Event Registrations (127, +25%), Active Programs (6), Published Blog Posts (25), Unread Messages (12)
+### 🏠 Home Page
 
-- Charts: Monthly Donations Overview (line chart) and Donations by Purpose (pie chart with Education 40%, Youth 25%, Charity 20%, Community 10%, General Fund 5%)
+* Hero section introducing Hope Alliance
+* Mission and vision
+* Featured programs
+* Call-to-action sections
+* Impact highlights
+* Donation call-to-action
+* Latest blog posts
 
-- Recent lists for donations, events, applications (with status tracking), and messages (Unread/Read status)
+### ℹ️ About Us
 
-**Supabase Backend Requirements:**
+Provides information about:
 
-Create database tables for: Programs, Events, Blog Posts, Donations, Event Registrations, Volunteers, Mentors, Prayer Requests, Messages, Newsletter Subscribers, Media, Users, and Settings. Set up Row Level Security (RLS) policies to restrict admin dashboard access to authenticated users, and ensure the public website queries only published/approved content.
+* Who we are
+* Our mission
+* Our vision
+* Our values
+* Our story
+* The communities we serve
 
-Generate a detailed, step-by-step prompt that includes UI/UX specifications, database schema setup, authentication flow, and all necessary API connections. The application that matches the system architecture shown in the image.
+### 🎯 Programs
 
-## Development
+Displays the major programs and initiatives offered by Hope Alliance, including:
+
+* Education
+* Charity and community support
+* Youth empowerment
+* Mentorship
+* Ministry
+* Youth conferences
+* Community development
+
+### 🛠️ Services
+
+Provides visitors with an overview of the services and support offered by the organization.
+
+### 📰 Blog
+
+The blog allows Hope Alliance to share:
+
+* News
+* Stories
+* Announcements
+* Events
+* Inspirational content
+* Community activities
+
+Each blog card can be opened to view the complete article on a dedicated blog details page.
+
+### 📊 Impact
+
+The Impact page communicates the organization's achievements and community contribution through:
+
+* People reached
+* Students supported
+* Communities impacted
+* Projects completed
+* Youth empowered
+* Stories of transformation
+* Impact statistics
+
+### 📞 Contact
+
+Visitors can contact Hope Alliance through the contact page.
+
+The page provides:
+
+* Contact information
+* Contact form
+* Location information
+* Social media links
+
+### 💰 Donations
+
+The website provides visitors with a clear way to support Hope Alliance financially and contribute to its programs and community initiatives.
+
+### 🔐 Admin Dashboard
+
+The administrative side of the platform is designed to allow authorized administrators to manage website content.
+
+Potential management areas include:
+
+* Blog posts
+* Programs
+* Services
+* Events
+* Impact information
+* Donations
+* Contact messages
+* Website content
+
+---
+
+## 🧑‍💻 Technology Stack
+
+### Frontend
+
+* React
+* TanStack
+* JavaScript / TypeScript
+* HTML5
+* CSS3
+* Responsive Web Design
+
+### Backend
+
+* Supabase
+* PostgreSQL
+* Supabase Authentication
+* Supabase Storage
+
+### Development Tools
+
+* Visual Studio Code
+* Git
+* GitHub
+* Codex
+
+---
+
+## 🏗️ Project Architecture
+
+The project follows a modern frontend architecture where the React application communicates with Supabase services.
+
+ Suggested Project Structure
+
+```text
+hope-alliance/
+│
+├── public/
+│   ├── images/
+│   ├── icons/
+│   └── favicon
+│
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── layouts/
+│   ├── routes/
+│   ├── hooks/
+│   ├── services/
+│   ├── lib/
+│   ├── assets/
+│   ├── styles/
+│   └── App.*
+│
+├── supabase/
+│   ├── migrations/
+│   └── functions/
+│
+├── .env
+├── .gitignore
+├── package.json
+└── README.md
+```
+
+---
+
+ Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
+```
+
+Navigate into the project:
+
+```bash
+cd hope-alliance
+```
+
+---
+
+### 2. Install Dependencies
+
+Run:
+
+```bash
+npm install
+```
+
+---
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the root directory.
+
+Example:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+> Never commit sensitive credentials, service-role keys, or private API keys to GitHub.
+
+---
+
+### 4. Start the Development Server
+
+Run:
+
+```bash
+npm run dev
+```
+
+The application will be available through the local development URL shown in your terminal.
+
+---
+
+## 🗄️ Supabase Database
+
+Supabase is used as the backend infrastructure for Hope Alliance.
+
+The database can contain tables such as:
+
+```text
+users
+blogs
+programs
+services
+events
+impact_statistics
+donations
+contact_messages
+```
+
+A simplified relationship can be represented as:
+
+```text
+Admin
+  │
+  ├── manages ──► Blogs
+  │
+  ├── manages ──► Programs
+  │
+  ├── manages ──► Services
+  │
+  ├── manages ──► Events
+  │
+  └── manages ──► Impact
+
+Visitors
+  │
+  ├── read ─────► Blogs
+  ├── view ─────► Programs
+  ├── view ─────► Impact
+  ├── contact ──► Contact Messages
+  └── support ──► Donations
+```
+
+---
+
+## 🔐 Authentication
+
+Supabase Authentication is used to secure administrative functionality.
+
+The system should ensure that:
+
+* Public visitors cannot access protected admin pages.
+* Only authenticated administrators can access the dashboard.
+* Admin routes are protected.
+* Database operations follow appropriate Row Level Security (RLS) policies.
+
+---
+
+## 📱 Responsive Design
+
+Hope Alliance is designed to work across different screen sizes:
+
+* 📱 Mobile phones
+* 📲 Tablets
+* 💻 Laptops
+* 🖥️ Desktop computers
+
+The interface should maintain usability and accessibility across devices.
+
+---
+
+## 🎨 Design Goals
+
+The website aims to provide a:
+
+* Clean interface
+* Modern visual experience
+* Professional nonprofit identity
+* Easy-to-use navigation
+* Accessible user experience
+* Mobile-first responsive design
+* Strong storytelling experience
+* Clear calls to action
+
+The overall design communicates **hope, compassion, faith, community, and positive impact**.
+
+## 🛡️ Security Considerations
+
+The project should follow security best practices, including:
+
+* Use Supabase Row Level Security (RLS)
+* Protect administrator routes
+* Validate form submissions
+* Sanitize user-generated content
+* Never expose service-role keys in frontend code
+* Store credentials in environment variables
+* Restrict database permissions according to user roles
+
+ About Hope Alliance
+
+Hope Alliance exists to bring hope and positive change to individuals and communities through **faith, education, mentorship, charity, youth empowerment, and community development**.
+
+> **Together, we can create hope, transform lives, and build stronger communities.**
+
+---
+
+Development
 
 Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
