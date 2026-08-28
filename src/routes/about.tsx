@@ -217,48 +217,50 @@ function AboutPage() {
 
         {/* Our Values */}
         <div className="mt-20">
-          <h2 className="section-title text-2xl">Our Values</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground max-w-3xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="section-title text-2xl">Our Values</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Our work is guided by these core values that shape how we serve communities.
-          </p>
+            </p>
+          </div>
 
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="p-6 shadow-card">
+            <Card className="p-6 text-center shadow-card">
               <h3 className="font-display text-base font-bold">Faith</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 We anchor our service in Christ-centred love and prayer.
               </p>
             </Card>
 
-            <Card className="p-6 shadow-card">
+            <Card className="p-6 text-center shadow-card">
               <h3 className="font-display text-base font-bold">Integrity</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 We steward every shilling and every story with honesty.
               </p>
             </Card>
 
-            <Card className="p-6 shadow-card">
+            <Card className="p-6 text-center shadow-card">
               <h3 className="font-display text-base font-bold">Compassion</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 We meet people where they are, with dignity.
               </p>
             </Card>
 
-            <Card className="p-6 shadow-card">
+            <Card className="p-6 text-center shadow-card">
               <h3 className="font-display text-base font-bold">Service</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 We lead by serving communities, not from above them.
               </p>
             </Card>
 
-            <Card className="p-6 shadow-card">
+            <Card className="p-6 text-center shadow-card">
               <h3 className="font-display text-base font-bold">Excellence</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 We deliver programs that are measurable and lasting.
               </p>
             </Card>
 
-            <Card className="p-6 shadow-card">
+            <Card className="p-6 text-center shadow-card">
               <h3 className="font-display text-base font-bold">Community</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 We build together — families, churches and partners.

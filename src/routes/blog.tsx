@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 
@@ -38,6 +38,7 @@ const BLOG_CATEGORIES = ["All", "Community", "Youth", "Education", "Community De
 const normalizeCategory = (value: string) => value.trim().toLowerCase();
 
 function BlogPage() {
+  const postRoute = useMatch({ from: "/blog/$postSlug", shouldThrow: false });
   const { data, isLoading } = useQuery({
     queryKey: ["posts", "all"],
     queryFn: () => fetchPosts(50),
@@ -49,6 +50,14 @@ function BlogPage() {
 
   function getBlogCardImage(category: string) {
     return category.toLowerCase().includes("student") ? studentsImage : heroChildrenImage;
+  }
+
+  if (postRoute) {
+    return (
+      <SiteShell>
+        <Outlet />
+      </SiteShell>
+    );
   }
 
   return (
@@ -98,11 +107,11 @@ function BlogPage() {
                     aria-label={`Read the full story: ${p.title}`}
                     className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-xl"
                   >
-                  <Card className="group h-full overflow-hidden border-border/70 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg">
-                    <div className="relative h-44 overflow-hidden bg-primary/10">
-                      <img
-                        src={p.cover_image_url ?? getBlogCardImage(p.category)}
-                        alt={`Blog cover for ${p.title}`}
+                    <Card className="group h-full overflow-hidden border-border/70 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg">
+                      <div className="relative h-44 overflow-hidden bg-primary/10">
+                        <img
+                          src={p.cover_image_url ?? getBlogCardImage(p.category)}
+                          alt={`Blog cover for ${p.title}`}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent px-4 py-3">
@@ -128,7 +137,6 @@ function BlogPage() {
                     </Card>
                   </Link>
                 ))
-
               : !isLoading && (
                   <div className="col-span-full rounded-3xl border border-dashed border-border/70 bg-card p-10 text-center text-muted-foreground">
                     No blog posts match this category yet.
@@ -136,6 +144,8 @@ function BlogPage() {
                 )}
         </div>
       </section>
+
+      <Outlet />
     </SiteShell>
   );
 }
