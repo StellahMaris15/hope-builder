@@ -1,6 +1,19 @@
 type DateInput = string | number | Date;
 
-const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS_SHORT = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 const MONTHS_LONG = [
   "January",
   "February",
@@ -44,6 +57,8 @@ export function formatDate(input: DateInput, pattern: string): string {
       return `${day} ${monthLong} ${year}`;
     case "EEEE, dd MMMM yyyy":
       return `${weekday}, ${day} ${monthLong} ${year}`;
+    case "hh:mm a":
+      return date.toLocaleTimeString("en-UG", { hour: "numeric", minute: "2-digit" });
     default:
       return date.toLocaleDateString("en-GB");
   }

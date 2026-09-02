@@ -38,62 +38,86 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
-    const redirectToDashboard = async (session: Session | null) => {
-      if (!hasAdminAccess(session?.user?.email)) {
-        if (session?.user) {
-          await supabase.auth.signOut();
+    let isMounted = true;
+
+    const checkAndRedirect = async (session: Session | null) => {
+      if (!session) return;
+
+      if (!hasAdminAccess(session.user?.email)) {
+        await supabase.auth.signOut();
+        if (isMounted) {
           toast.error("This account does not have dashboard access.");
         }
         return;
       }
 
-      navigate({ to: "/admin", replace: true });
+      if (isMounted) {
+        // Use void to prevent floating promises during render execution
+        void navigate({ to: "/admin", replace: true });
+      }
     };
 
+    // 1. Initial check for existing active session
     supabase.auth.getSession().then(({ data }) => {
-      void redirectToDashboard(data.session);
+      if (isMounted && data.session) {
+        void checkAndRedirect(data.session);
+      }
     });
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      void redirectToDashboard(session);
+    // 2. Listen for auth changes, ignoring INITIAL_SESSION to prevent duplicate fires
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      if (isMounted && event === "SIGNED_IN") {
+        void checkAndRedirect(session);
+      }
     });
 
-    return () => subscription.subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const signIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const email = String(fd.get("email") ?? "")
-      .trim()
-      .toLowerCase();
 
-    if (email !== ADMIN_EMAIL) {
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (trimmedEmail !== ADMIN_EMAIL) {
       toast.error("Only the demo admin email can access the dashboard.");
       return;
     }
 
     setBusy(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: String(fd.get("password") ?? ""),
-    });
-    setBusy(false);
 
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
+        password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        setBusy(false);
+        return;
+      }
+
+      if (!data.session || !hasAdminAccess(data.session.user.email)) {
+        await supabase.auth.signOut();
+        toast.error("This account does not have dashboard access.");
+        setBusy(false);
+        return;
+      }
+
+      // Allow onAuthStateChange or direct navigation to handle route replacement
+      await navigate({ to: "/admin", replace: true });
+    } catch (err: any) {
+      toast.error(err?.message || "An error occurred while signing in.");
+      setBusy(false);
     }
-
-    if (!data.session || !hasAdminAccess(data.session.user.email)) {
-      await supabase.auth.signOut();
-      toast.error("This account does not have dashboard access.");
-      return;
-    }
-
-    navigate({ to: "/admin", replace: true });
   };
 
   return (
@@ -121,9 +145,11 @@ function AuthPage() {
                 id="si-email"
                 name="email"
                 type="email"
-                defaultValue={ADMIN_EMAIL}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 required
+                disabled={busy}
               />
             </div>
             <div className="space-y-2">
@@ -132,8 +158,11 @@ function AuthPage() {
                 id="si-password"
                 name="password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
+                disabled={busy}
               />
             </div>
             <Button type="submit" className="w-full shadow-none" disabled={busy}>

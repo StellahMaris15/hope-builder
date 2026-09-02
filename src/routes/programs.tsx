@@ -1,14 +1,23 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { useCallback, useEffect } from "react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import z from "zod";
+
 import { PageHero, SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
 import { getProgramVisual } from "@/components/site/program-visuals";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchPrograms } from "@/lib/api";
+import { fetchPrograms, type Program } from "@/lib/api";
+
+// 1. Search Schema & Route Definition goes here at the top level
+const programsSearchSchema = z.object({
+  program: z.string().optional(),
+});
 
 export const Route = createFileRoute("/programs")({
+  validateSearch: (search) => programsSearchSchema.parse(search),
   head: () => ({
     meta: [
       { title: "Our Programs — Education, Mentorship & Outreach | Hope Alliance" },
@@ -27,8 +36,43 @@ export const Route = createFileRoute("/programs")({
   component: ProgramsPage,
 });
 
+// 2. The component implementation goes right below the Route definition
 function ProgramsPage() {
-  const { data, isLoading } = useQuery({ queryKey: ["programs"], queryFn: fetchPrograms });
+  const { program: activeSlug } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["programs"],
+    queryFn: fetchPrograms,
+  });
+
+  const selectedProgram = (data ?? []).find((p) => p.slug === activeSlug) || null;
+
+  const handleOpenProgram = (slug: string) => {
+    navigate({ search: { program: slug } });
+  };
+
+  const handleCloseOverlay = useCallback(() => {
+    navigate({ search: { program: undefined } });
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleCloseOverlay();
+    };
+
+    if (selectedProgram) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedProgram, handleCloseOverlay]);
 
   return (
     <SiteShell>
@@ -41,22 +85,23 @@ function ProgramsPage() {
           </Button>
         }
       />
+
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {isLoading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <Skeleton key={i} className="h-56 rounded-xl" />
               ))
-            : (data ?? []).map((p) => {
+            : (data ?? []).map((p: Program) => {
                 const visual = getProgramVisual(p.title, p.icon);
 
                 return (
-                  <Link
+                  <button
                     key={p.id}
-                    to="/programs/$programSlug"
-                    params={{ programSlug: p.slug }}
-                    className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                    type="button"
+                    onClick={() => handleOpenProgram(p.slug)}
                     aria-label={`Read more about ${p.title}`}
+                    className="group block w-full text-left focus:outline-none rounded-xl"
                   >
                     <Card className="grid aspect-[4/5] grid-rows-[4fr_1fr] overflow-hidden border-border/70 shadow-card transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
                       <div className="relative min-h-0 overflow-hidden bg-primary/5">
@@ -82,16 +127,83 @@ function ProgramsPage() {
                           </p>
                         </div>
                         <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
-                          Read more
+                          Read details
                           <ArrowRight className="size-4" />
                         </span>
                       </div>
                     </Card>
-                  </Link>
+                  </button>
                 );
               })}
         </div>
       </section>
+
+      {/* Overlay Drawer View */}
+      {selectedProgram && (
+        <div className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-background text-foreground animate-in fade-in duration-200">
+          <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mb-6 flex items-center justify-between border-b border-border/60 pb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCloseOverlay}
+                className="gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="size-4" />
+                Back to all programs
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseOverlay}
+                className="rounded-full"
+                aria-label="Close details"
+              >
+                <X className="size-5" />
+              </Button>
+            </div>
+
+            {(() => {
+              const visual = getProgramVisual(selectedProgram.title, selectedProgram.icon);
+              return (
+                <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl bg-muted shadow-md">
+                  <img
+                    src={visual.src}
+                    alt={visual.alt}
+                    className="size-full object-cover"
+                    style={visual.position ? { objectPosition: visual.position } : undefined}
+                  />
+                </div>
+              );
+            })()}
+
+            <div className="mt-8 space-y-6">
+              <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                {selectedProgram.title}
+              </h1>
+
+              <div className="space-y-3 pt-2">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  Program Overview
+                </h2>
+                <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">
+                  {selectedProgram.description || selectedProgram.summary || "No description provided for this program."}
+                </p>
+              </div>
+
+              <div className="mt-12 pt-6 border-t border-border/60 flex justify-between items-center">
+                <Button variant="outline" onClick={handleCloseOverlay}>
+                  <ArrowLeft className="mr-2 size-4" />
+                  Back to Programs
+                </Button>
+                <Button asChild variant="default">
+                  <Link to="/donate">Support This Program</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </SiteShell>
   );
 }

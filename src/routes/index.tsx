@@ -1,34 +1,32 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   Building2,
-  Calendar,
   ChevronLeft,
   ChevronRight,
   GraduationCap,
   Heart,
-  MessageSquare,
   Quote,
-  ThumbsUp,
   Users,
 } from "lucide-react";
 
 import heroImage from "@/assets/hero-children.jpg";
-import heroEducation from "@/assets/HA4.jpg"; // HA4.jpg
+import heroEducation from "@/assets/HA4.jpg";
 import heroCommunity from "@/assets/communtiy outreach.jpg";
-import blogImage3 from "@/assets/HA3.jpg"; // HA3.jpg
-import blogImage2 from "@/assets/HA2.jpg"; // HA2.jpg
 
 import { SiteShell } from "@/components/site/SiteShell";
+import { EventPreview } from "@/components/site/EventPreview";
 import { getEventVisual } from "@/components/site/event-visuals";
 import { getProgramVisual } from "@/components/site/program-visuals";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/date";
-import { fetchPrograms, fetchUpcomingEvents } from "@/lib/api";
+import { fetchPosts, fetchPrograms, fetchUpcomingEvents, type EventItem } from "@/lib/api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -134,44 +132,15 @@ const TESTIMONIALS = [
     badge: "Community Leadership",
   },
 ];
-
-const BLOG_POSTS = [
-  {
-    id: 1,
-    title: "Transforming Rural Communities Through Education",
-    excerpt: "How quality schooling, school supplies, and dedicated mentors are building bright futures for youth across Uganda.",
-    author: "Hope Alliance Team",
-    date: "12 May 2026",
-    likes: "1.7K",
-    comments: "1K",
-    slug: "transforming-rural-communities-education",
-    image: heroEducation, // HA4.jpg
-  },
-  {
-    id: 2,
-    title: "Youth Mentorship & Leadership Development",
-    excerpt: "Empowering the next generation with practical life skills, career guidance, and spiritual growth opportunities.",
-    author: "Hope Alliance Team",
-    date: "28 Apr 2026",
-    likes: "1.7K",
-    comments: "1K",
-    slug: "youth-mentorship-leadership",
-    image: blogImage3, // HA3.jpg
-  },
-  {
-    id: 3,
-    title: "Community Outreach & Sustainable Relief Programs",
-    excerpt: "Working alongside local leaders to deliver essential healthcare support, relief aid, and community development.",
-    author: "Hope Alliance Team",
-    date: "15 Mar 2026",
-    likes: "1.7K",
-    comments: "1K",
-    slug: "community-outreach-sustainable-relief",
-    image: blogImage2, // HA2.jpg
-  },
-];
-
-function AnimatedNumber({ value, active, className }: { value: string; active?: boolean; className?: string }) {
+function AnimatedNumber({
+  value,
+  active,
+  className,
+}: {
+  value: string;
+  active?: boolean;
+  className?: string;
+}) {
   const rafRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
@@ -187,7 +156,7 @@ function AnimatedNumber({ value, active, className }: { value: string; active?: 
 
   const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n) + suffix;
 
-  const start = () => {
+  const start = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     startRef.current = performance.now();
     const duration = 1200;
@@ -204,7 +173,7 @@ function AnimatedNumber({ value, active, className }: { value: string; active?: 
     };
 
     rafRef.current = requestAnimationFrame(step);
-  };
+  }, [target]);
 
   useEffect(() => {
     start();
@@ -214,11 +183,11 @@ function AnimatedNumber({ value, active, className }: { value: string; active?: 
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [target]);
+  }, [start]);
 
   useEffect(() => {
     if (active) start();
-  }, [active]);
+  }, [active, start]);
 
   return <p className={className}>{fmt(display)}</p>;
 }
@@ -229,8 +198,9 @@ function HomePage() {
 
   const programs = useQuery({ queryKey: ["programs"], queryFn: fetchPrograms });
   const events = useQuery({ queryKey: ["events", 3], queryFn: () => fetchUpcomingEvents(3) });
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const posts = useQuery({ queryKey: ["posts", 3], queryFn: () => fetchPosts(3) });
 
-  // Auto-advance slide every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
@@ -362,38 +332,39 @@ function HomePage() {
             </p>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {(programs.data ?? []).slice(0, 4).map((p) => {
-              const visual = getProgramVisual(p.title, p.icon);
+           {/* Programs Section Mapping */}
+{(programs.data ?? []).slice(0, 4).map((p) => {
+  const visual = getProgramVisual(p.title, p.icon);
 
-              return (
-                <Link
-                  key={p.id}
-                  to="/programs/$programSlug"
-                  params={{ programSlug: p.slug }}
-                  className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                  aria-label={`Open ${p.title}`}
-                >
-                  <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
-                    <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
-                      <img
-                        src={visual.src}
-                        alt={visual.alt}
-                        className="size-full object-cover transition-transform duration-500 hover:scale-105"
-                        style={visual.position ? { objectPosition: visual.position } : undefined}
-                      />
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <h3 className="font-display text-base font-bold text-foreground">
-                        {p.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        {p.summary}
-                      </p>
-                    </div>
-                  </Card>
-                </Link>
-              );
-            })}
+  return (
+    <Link
+      key={p.id}
+      to="/programs"
+      search={{ program: p.slug }} // 👈 Send slug as query parameter
+      className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      aria-label={`Open ${p.title}`}
+    >
+      <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
+        <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
+          <img
+            src={visual.src}
+            alt={visual.alt}
+            className="size-full object-cover transition-transform duration-500 hover:scale-105"
+            style={visual.position ? { objectPosition: visual.position } : undefined}
+          />
+        </div>
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="font-display text-base font-bold text-foreground">
+            {p.title}
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {p.summary}
+          </p>
+        </div>
+      </Card>
+    </Link>
+  );
+})}
           </div>
         </div>
       </section>
@@ -407,124 +378,139 @@ function HomePage() {
           </Button>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {(events.data ?? []).map((e) => {
-            const visual = getEventVisual(e.title, e.image_url);
+          {/* Events Section Mapping */}
+{(events.data ?? []).slice(0, 3).map((event) => {
+  // 1. Ensure visual source is safely fallbacked using your helper or object property
+  const visualSrc =
+    getEventVisual(event.title, event.image_url).src;
 
-            return (
-              <Card
-                key={e.id}
-                className="grid aspect-[4/5] grid-rows-[4fr_1fr] overflow-hidden border-border/70 shadow-card"
-              >
-                <div className="min-h-0 overflow-hidden bg-primary/10">
-                  <img
-                    src={visual.src}
-                    alt={visual.alt}
-                    className="size-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                </div>
-                <div className="min-h-0 overflow-hidden p-4">
-                  <h3 className="truncate font-display text-base font-bold">{e.title}</h3>
-                  <p className="mt-1 truncate text-sm text-muted-foreground">
-                    {formatDate(e.starts_at, "dd MMM yyyy")}
-                  </p>
-                  <p className="truncate text-sm text-muted-foreground">{e.location}</p>
-                </div>
-              </Card>
-            );
-          })}
+  // 2. Fallback identifier to handle either slug or id
+  const targetId = event.slug || event.id;
+
+  return (
+    <Link
+      key={event.id}
+      to="/events"
+      search={{ eventId: targetId, event: targetId }} // 👈 Passes both common query param keys
+      className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      aria-label={`View ${event.title}`}
+    >
+      <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
+        <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
+          <img
+            src={visualSrc}
+            alt={event.title}
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <span className="absolute bottom-3 left-3 bg-black/60 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm rounded">
+            View Event
+          </span>
+        </div>
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
+            {event.title}
+          </h3>
+          <p className="mt-2 text-xs font-medium text-amber-600">
+            {formatDate(event.starts_at, "dd MMM yyyy")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {event.location}
+          </p>
+        </div>
+      </Card>
+    </Link>
+  );
+})}
         </div>
       </section>
 
-      {/* Blog Section (Styled like reference image) */}
+      <EventPreview event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+
       {/* Blog Section */}
-<section className="bg-secondary/60 py-16">
-  <div className="mx-auto max-w-7xl px-4 sm:px-6">
-    <div className="text-center max-w-2xl mx-auto mb-12">
-      <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-        OUR BLOG
-      </p>
-      <SectionHeading title="Popular Hope Alliance Blogs" align="center" />
-      <p className="mt-3 text-base text-muted-foreground">
-        Discover stories of empowerment, youth mentorship, and community transformations directly from our team and partners in Uganda.
-      </p>
-    </div>
-
-    <div className="grid gap-8 md:grid-cols-3">
-      {BLOG_POSTS.map((post) => (
-        <Card
-          key={post.id}
-          className="flex flex-col overflow-hidden border-border/70 bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-        >
-          {/* Image linked directly to article detail */}
-          <Link
-            to="/blog/$postSlug"
-            params={{ postSlug: post.slug }}
-            className="relative aspect-[4/3] w-full overflow-hidden bg-muted block group cursor-pointer"
-          >
-            <img
-              src={post.image}
-              alt={post.title}
-              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-
-            {/* Stat Overlay Bar */}
-            <div className="absolute bottom-0 inset-x-0 grid grid-cols-3 bg-black/60 px-3 py-2.5 text-xs text-white backdrop-blur-sm divide-x divide-white/20">
-              <div className="flex items-center justify-center gap-1.5">
-                <Calendar className="size-3.5" />
-                <span>{post.date}</span>
-              </div>
-              <div className="flex items-center justify-center gap-1.5">
-                <ThumbsUp className="size-3.5" />
-                <span>{post.likes}</span>
-              </div>
-              <div className="flex items-center justify-center gap-1.5">
-                <MessageSquare className="size-3.5" />
-                <span>{post.comments}</span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Card Content */}
-          <div className="flex flex-1 flex-col p-6">
-            <p className="text-xs font-medium text-muted-foreground">
-              Posted By: <span className="font-semibold text-foreground">{post.author}</span>
+      <section className="bg-secondary/60 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <p className="text-sm font-semibold uppercase tracking-widest text-primary">OUR BLOG</p>
+            <SectionHeading title="Popular Hope Alliance Blogs" align="center" />
+            <p className="mt-3 text-base text-muted-foreground">
+              Discover stories of empowerment, youth mentorship, and community transformations
+              directly from our team and partners in Uganda.
             </p>
-
-            <h3 className="mt-2 font-display text-lg font-bold text-foreground leading-snug line-clamp-2">
-              <Link 
-                to="/blog/$postSlug" 
-                params={{ postSlug: post.slug }}
-                className="hover:text-primary transition-colors"
-              >
-                {post.title}
-              </Link>
-            </h3>
-
-            <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
-              {post.excerpt}
-            </p>
-
-            <div className="mt-6 pt-2">
-              <Button asChild className="rounded-full px-6 font-semibold">
-                <Link to="/blog/$postSlug" params={{ postSlug: post.slug }}>
-                  Read More
-                </Link>
-              </Button>
-            </div>
           </div>
-        </Card>
-      ))}
-    </div>
-  </div>
-</section>
-      
+
+          <div className="grid gap-8 md:grid-cols-3">
+            {posts.isLoading
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-[28rem] rounded-xl" />
+                ))
+              : (posts.data ?? []).map((post) => (
+                  <Card
+                    key={post.id}
+                    className="group flex flex-col overflow-hidden border-border/70 bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <Link
+                      to="/blog/$postSlug"
+                      params={{ postSlug: post.slug }}
+                      aria-label={`Read the full story: ${post.title}`}
+                      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden bg-primary/10">
+                        <img
+                          src={post.cover_image_url ?? heroEducation}
+                          alt={`Blog cover for ${post.title}`}
+                          className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent px-4 py-3">
+                          <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
+                            Read story
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <div className="flex flex-1 flex-col p-6">
+                      <Badge variant="secondary">{post.category}</Badge>
+
+                      <h3 className="mt-3 font-display text-lg font-bold leading-snug transition-colors group-hover:text-accent">
+                        <Link
+                          to="/blog/$postSlug"
+                          params={{ postSlug: post.slug }}
+                          className="focus-visible:outline-none"
+                        >
+                          {post.title}
+                        </Link>
+                      </h3>
+
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground line-clamp-3">
+                        {post.excerpt}
+                      </p>
+
+                      <p className="mt-4 text-xs text-muted-foreground/70">
+                        {formatDate(post.published_at, "dd MMM yyyy")} - {post.author_name}
+                      </p>
+
+                      <div className="mt-6">
+                        <Button asChild className="rounded-full px-6 font-semibold">
+                          <Link to="/blog/$postSlug" params={{ postSlug: post.slug }}>
+                            Read More
+                            <ArrowRight className="ml-2 size-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+          </div>
+        </div>
+      </section>
 
       {/* Testimonials */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <SectionHeading title="Lives Touched & Transformed" align="center" />
           <p className="mt-3 text-base text-muted-foreground">
-            Hear directly from the community members, students, and partners whose lives have been impacted by Hope Alliance.
+            Hear directly from the community members, students, and partners whose lives have been
+            impacted by Hope Alliance.
           </p>
         </div>
 
@@ -547,9 +533,7 @@ function HomePage() {
               </div>
 
               <div className="mt-6 border-t border-border/50 pt-4">
-                <p className="font-display text-sm font-bold text-foreground">
-                  {item.author}
-                </p>
+                <p className="font-display text-sm font-bold text-foreground">{item.author}</p>
                 <p className="text-xs text-muted-foreground">{item.role}</p>
               </div>
             </Card>
