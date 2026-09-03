@@ -4,15 +4,16 @@ import {
   Briefcase,
   Coins,
   GraduationCap,
-  Heart,
   HeartHandshake,
   Stethoscope,
   Users,
 } from "lucide-react";
 
 import aboutImage from "@/assets/about-community.jpg";
-import charityImage from "@/assets/charity.jpg";
-import mentorshipImage from "@/assets/program-mentorship.jpg";
+import maryImage from "@/assets/Mary.jpg";
+import nancyImage from "@/assets/Nancy.jpg";
+import servingImage from "@/assets/serving.jpg";
+import williamImage from "@/assets/william.jpg";
 import { PageHero, SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -82,12 +83,6 @@ const SERVICES = [
       "Equipping youth and guardians with practical vocational training and small business tools for sustainable self-reliance.",
     icon: Briefcase,
   },
-  {
-    title: "Faith & Spiritual Care",
-    description:
-      "Anchoring our service in Christ-centered love, offering spiritual guidance, prayer support, and community encouragement.",
-    icon: Heart,
-  },
 ];
 
 function AboutPage() {
@@ -112,21 +107,15 @@ function AboutPage() {
       {/* Main Section */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         {/* Who We Are */}
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-          {/* Left Column: Framed Image */}
+        <div className="grid gap-13 lg:grid-cols-13 lg:items-center">
+          {/* Left Column: Image */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="relative p-6 bg-primary w-full max-w-md">
-              <div className="relative bg-background p-2 overflow-hidden shadow-lg">
-                <img
-                  src={aboutImage}
-                  alt="Hope Alliance Outreach"
-                  className="w-full h-[380px] object-cover"
-                />
-              </div>
-
-              {/* Angle frame clip accents */}
-              <div className="absolute inset-y-0 left-0 w-6 bg-primary [clip-path:polygon(0_0,100%_8%,100%_92%,0_100%)]" />
-              <div className="absolute inset-y-0 right-0 w-6 bg-primary [clip-path:polygon(0_8%,100%_0,100%_100%,0_92%)]" />
+            <div className="w-full max-w-md overflow-hidden">
+              <img
+                src={servingImage}
+                alt="Hope Alliance Outreach"
+                className="w-full h-[380px] object-cover"
+              />
             </div>
           </div>
 
@@ -172,7 +161,7 @@ function AboutPage() {
 
             {/* Donate Action Button */}
             <div className="pt-4">
-              <Button asChild size="lg" className="rounded-full px-8 font-bold">
+              <Button asChild variant="hero" size="lg" className="rounded-full px-8 font-bold">
                 <Link to="/donate">Donate</Link>
               </Button>
             </div>
@@ -283,20 +272,20 @@ function AboutPage() {
               {
                 title: "John William",
                 body: "Founder of Hope Alliance and a guiding voice for the organization’s mission.",
-                image: aboutImage,
-                alt: "Hope Alliance community leaders gathered with residents",
+                image: williamImage,
+                alt: "William, founder of Hope Alliance",
               },
               {
                 title: "Nancy Achieng",
                 body: "A caring mentor who supports young people with encouragement and guidance.",
-                image: mentorshipImage,
-                alt: "A mentor supporting a young person",
+                image: nancyImage,
+                alt: "Nancy, a Hope Alliance mentor",
               },
               {
                 title: "Mary Atim",
                 body: "A compassionate volunteer helping families with practical care and support.",
-                image: charityImage,
-                alt: "Volunteers preparing support for community outreach",
+                image: maryImage,
+                alt: "Mary, a Hope Alliance volunteer",
               },
             ].map((member) => (
               <Card

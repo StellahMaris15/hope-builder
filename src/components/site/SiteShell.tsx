@@ -1,17 +1,50 @@
-import React, { type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import defaultHeroImage from "@/assets/hero-children.jpg";
 import { Button } from "@/components/ui/button";
+import { ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
 
 export function SiteShell({ children }: { children: ReactNode }) {
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const updateVisibility = () => setShowBackToTop(window.scrollY > 360);
+
+    updateVisibility();
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    return () => window.removeEventListener("scroll", updateVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Back to top"
+        className={cn(
+          "group fixed bottom-5 right-5 z-50 grid size-12 place-items-center rounded-full border border-white/20 bg-primary-deep/90 text-primary-foreground shadow-[0_12px_35px_-12px_rgba(0,0,0,0.7)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:bottom-7 sm:right-7 sm:size-14",
+          showBackToTop
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-4 opacity-0",
+        )}
+      >
+        <ChevronUp className="size-5 transition-transform duration-300 group-hover:-translate-y-0.5 sm:size-6" />
+      </button>
     </div>
   );
 }

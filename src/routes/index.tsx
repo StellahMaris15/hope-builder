@@ -13,9 +13,8 @@ import {
 } from "lucide-react";
 
 import heroImage from "@/assets/hero-children.jpg";
-import heroEducation from "@/assets/HA4.jpg";
-import heroCommunity from "@/assets/communtiy outreach.jpg";
-
+import heroEducation from "@/assets/HA4.png";
+import heroCommunity from "@/assets/community outreach.png";
 import { SiteShell } from "@/components/site/SiteShell";
 import { EventPreview } from "@/components/site/EventPreview";
 import { getEventVisual } from "@/components/site/event-visuals";
@@ -332,39 +331,39 @@ function HomePage() {
             </p>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-           {/* Programs Section Mapping */}
-{(programs.data ?? []).slice(0, 4).map((p) => {
-  const visual = getProgramVisual(p.title, p.icon);
+            {/* Programs Section Mapping */}
+            {(programs.data ?? []).slice(0, 4).map((p) => {
+              const visual = getProgramVisual(p.title, p.icon);
 
-  return (
-    <Link
-      key={p.id}
-      to="/programs"
-      search={{ program: p.slug }} // 👈 Send slug as query parameter
-      className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-      aria-label={`Open ${p.title}`}
-    >
-      <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
-        <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
-          <img
-            src={visual.src}
-            alt={visual.alt}
-            className="size-full object-cover transition-transform duration-500 hover:scale-105"
-            style={visual.position ? { objectPosition: visual.position } : undefined}
-          />
-        </div>
-        <div className="flex flex-1 flex-col p-5">
-          <h3 className="font-display text-base font-bold text-foreground">
-            {p.title}
-          </h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {p.summary}
-          </p>
-        </div>
-      </Card>
-    </Link>
-  );
-})}
+              return (
+                <Link
+                  key={p.id}
+                  to="/programs"
+                  search={{ program: p.slug }} // 👈 Send slug as query parameter
+                  className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                  aria-label={`Open ${p.title}`}
+                >
+                  <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
+                      <img
+                        src={visual.src}
+                        alt={visual.alt}
+                        className="size-full object-cover transition-transform duration-500 hover:scale-105"
+                        style={visual.position ? { objectPosition: visual.position } : undefined}
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="font-display text-base font-bold text-foreground">
+                        {p.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {p.summary}
+                      </p>
+                    </div>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -379,48 +378,45 @@ function HomePage() {
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {/* Events Section Mapping */}
-{(events.data ?? []).slice(0, 3).map((event) => {
-  // 1. Ensure visual source is safely fallbacked using your helper or object property
-  const visualSrc =
-    getEventVisual(event.title, event.image_url).src;
+          {(events.data ?? []).slice(0, 3).map((event) => {
+            // 1. Ensure visual source is safely fallbacked using your helper or object property
+            const visualSrc = getEventVisual(event.title, event.image_url).src;
 
-  // 2. Fallback identifier to handle either slug or id
-  const targetId = event.slug || event.id;
+            // 2. Fallback identifier to handle either slug or id
+            const targetId = event.slug || event.id;
 
-  return (
-    <Link
-      key={event.id}
-      to="/events"
-      search={{ eventId: targetId, event: targetId }} // 👈 Passes both common query param keys
-      className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-      aria-label={`View ${event.title}`}
-    >
-      <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
-        <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
-          <img
-            src={visualSrc}
-            alt={event.title}
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <span className="absolute bottom-3 left-3 bg-black/60 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm rounded">
-            View Event
-          </span>
-        </div>
-        <div className="flex flex-1 flex-col p-5">
-          <h3 className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
-            {event.title}
-          </h3>
-          <p className="mt-2 text-xs font-medium text-amber-600">
-            {formatDate(event.starts_at, "dd MMM yyyy")}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {event.location}
-          </p>
-        </div>
-      </Card>
-    </Link>
-  );
-})}
+            return (
+              <Link
+                key={event.id}
+                to="/events"
+                search={{ eventId: targetId, event: targetId }} // 👈 Passes both common query param keys
+                className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                aria-label={`View ${event.title}`}
+              >
+                <Card className="flex flex-col overflow-hidden border-border/70 shadow-card">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-primary/5">
+                    <img
+                      src={visualSrc}
+                      alt={event.title}
+                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute bottom-3 left-3 bg-black/60 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm rounded">
+                      View Event
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                      {event.title}
+                    </h3>
+                    <p className="mt-2 text-xs font-medium text-amber-600">
+                      {formatDate(event.starts_at, "dd MMM yyyy")}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{event.location}</p>
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
