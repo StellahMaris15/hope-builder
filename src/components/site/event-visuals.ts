@@ -1,4 +1,4 @@
-import communityOutreachImage from "@/assets/communtiy outreach.jpg";
+import communityOutreachImage from "@/assets/community outreach.png";
 import youthConferenceImage from "@/assets/hope youth conference.jpg";
 import leadershipTrainingImage from "@/assets/leadership training.jpg";
 
