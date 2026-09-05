@@ -8,6 +8,7 @@ import { PageHero, SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
 import { getProgramVisual } from "@/components/site/program-visuals";
 import { Card } from "@/components/ui/card";
+import heroChildrenImage from "@/assets/hero-children.jpg";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPrograms, type Program } from "@/lib/api";
 
@@ -78,6 +79,7 @@ function ProgramsPage() {
     <SiteShell>
       <PageHero
         title="Programs"
+        image={heroChildrenImage}
         description="Explore the education, mentorship, outreach and leadership initiatives that help shape brighter futures."
         actions={
           <Button asChild variant="hero" size="lg">
