@@ -88,21 +88,21 @@ const SERVICES = [
 function AboutPage() {
   return (
     <SiteShell>
-      <PageHero
-        title="About Hope Alliance"
-        image={aboutImage}
-        description="We are a faith-driven nonprofit serving Ugandan families through education, mentorship, outreach and community-led care."
-        actions={
-          <>
-            <Button asChild variant="hero" size="lg">
-              <Link to="/programs">EXPLORE OUR PROGRAMS</Link>
-            </Button>
-            <Button asChild variant="outlineLight" size="lg">
-              <Link to="/get-involved">JOIN OUR MISSION</Link>
-            </Button>
-          </>
-        }
-      />
+     <PageHero
+  title="About Hope Alliance"
+  image={aboutImage}
+  description="We are a faith-driven nonprofit serving Ugandan families through education, mentorship, outreach and community-led care."
+  actions={
+    <div className="flex flex-row items-center gap-4">
+      <Button asChild variant="hero" size="lg">
+        <Link to="/programs">EXPLORE OUR PROGRAMS</Link>
+      </Button>
+      <Button asChild variant="outlineLight" size="lg">
+        <Link to="/get-involved">JOIN OUR MISSION</Link>
+      </Button>
+    </div>
+  }
+/>
 
       {/* Main Section */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">

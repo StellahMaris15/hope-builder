@@ -93,14 +93,14 @@ function ImpactPage() {
         image={aboutCommunityImage}
         description="Hope Alliance serves Ugandan families through education, mentorship, charity and outreach. We measure progress by lives reached, young people supported and communities strengthened."
         actions={
-          <>
-            <Button asChild variant="hero" size="lg">
+        <div className="flex flex-row items-center gap-4">
+              <Button asChild variant="hero" size="lg">
               <Link to="/donate">SUPPORT THIS WORK</Link>
             </Button>
             <Button asChild variant="outlineLight" size="lg">
               <Link to="/programs">VIEW OUR PROGRAMS</Link>
             </Button>
-          </>
+          </div>
         }
       />
 
