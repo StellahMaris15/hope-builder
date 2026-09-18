@@ -122,12 +122,6 @@ function AboutPage() {
           {/* Right Column: Copy */}
           <div className="lg:col-span-7 space-y-6">
             <div>
-              <div className="flex items-center gap-3">
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-                  ABOUT US
-                </p>
-                <span className="h-[2px] w-12 bg-primary/40" />
-              </div>
               <h2 className="mt-2 font-display text-3xl font-extrabold text-foreground sm:text-4xl">
                 Who We Are
               </h2>
@@ -185,17 +179,10 @@ function AboutPage() {
           <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((service) => (
               <div key={service.title} className="flex flex-col items-start space-y-3">
-                {/* Icon Badge */}
-                <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <service.icon className="size-6" />
-                </div>
-
-                {/* Service Title */}
                 <h3 className="font-display text-lg font-bold text-foreground">
                   {service.title}
                 </h3>
 
-                {/* Description */}
                 <p className="text-sm leading-relaxed text-muted-foreground">
                   {service.description}
                 </p>
